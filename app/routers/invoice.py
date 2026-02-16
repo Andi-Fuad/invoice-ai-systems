@@ -1,4 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.invoice import Invoice
@@ -98,6 +99,31 @@ def get_invoices(skip: int = 0, limit: int = 100, db: Session = Depends(get_db))
     invoices = db.query(Invoice).offset(skip).limit(limit).all()
     return invoices
 
+@router.get("/stats")
+def get_stats(db: Session = Depends(get_db)):
+    """Get invoice statistics for dashboard"""
+    from sqlalchemy import func
+    
+    total_invoices = db.query(Invoice).count()
+    total_amount = db.query(func.sum(Invoice.total)).scalar() or 0
+    vendors_count = db.query(Invoice.store_name).distinct().count()
+    
+    # Get this month's count
+    from datetime import datetime
+    current_month = datetime.now().month
+    current_year = datetime.now().year
+    this_month = db.query(Invoice).filter(
+        func.extract('month', Invoice.invoice_date) == current_month,
+        func.extract('year', Invoice.invoice_date) == current_year
+    ).count()
+    
+    return {
+        "total_invoices": total_invoices,
+        "total_amount": float(total_amount),
+        "vendors_count": vendors_count,
+        "this_month": this_month
+    }
+
 @router.get("/{invoice_id}", response_model=InvoiceResponse)
 def get_invoice(invoice_id: int, db: Session = Depends(get_db)):
     """Get specific invoice by ID"""
@@ -105,6 +131,18 @@ def get_invoice(invoice_id: int, db: Session = Depends(get_db)):
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     return invoice
+
+@router.get("/{invoice_id}/image")
+def get_invoice_image(invoice_id: int, db: Session = Depends(get_db)):
+    """Get invoice image file"""
+    invoice = db.query(Invoice).filter(Invoice.id == invoice_id).first()
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    if not os.path.exists(invoice.file_path):
+        raise HTTPException(status_code=404, detail="Invoice file not found")
+    
+    return FileResponse(invoice.file_path)
 
 @router.get("/hash/{file_hash}", response_model=InvoiceResponse)
 def get_invoice_by_hash(file_hash: str, db: Session = Depends(get_db)):

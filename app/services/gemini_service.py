@@ -7,7 +7,7 @@ import io
 class GeminiService:
     def __init__(self):
         genai.configure(api_key=settings.gemini_api_key)
-        self.model = genai.GenerativeModel(settings.gemini_flash_3)
+        self.model = "Gemini 2.5 Flash"
     
     def extract_invoice_data(self, image_bytes: bytes, mime_type: str) -> dict:
         """

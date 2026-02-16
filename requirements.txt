@@ -10,3 +10,4 @@ python-dotenv
 reportlab
 matplotlib
 imagehash
+pydantic-settings
