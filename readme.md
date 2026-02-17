@@ -6,6 +6,11 @@ AI-powered invoice processing system with automated data extraction and cloud de
 
 The Invoice AI System is a full-stack application that automates invoice processing using Google's Gemini Vision API. It features a FastAPI backend, Streamlit frontend, and complete AWS infrastructure managed through Terraform.
 
+There are three types of branches in this repository:
+- **Main**: Serves as the official, live version of the project.
+- **Staging**: Acts as a mirror of the production environment for final testing. It provides a "safety net" to catch bugs that only appear in a production-like setting.
+- **Development Branches**: Serves as the developments and researches for the project.
+
 ## Features
 
 - **AI-Powered Extraction**: Automatic extraction of vendor names, amounts, dates, and line items from invoice images
