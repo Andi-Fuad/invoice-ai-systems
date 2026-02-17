@@ -48,7 +48,6 @@ chown -R ec2-user:ec2-user /home/ec2-user/invoice-ai-system
 # Create docker-compose.yml
 echo "[6/9] Creating docker-compose.yml..."
 cat > docker-compose.yml << 'DOCKERCOMPOSE'
-version: '3.8'
 
 services:
   postgres:
@@ -77,13 +76,12 @@ services:
     working_dir: /app
     command: >
       bash -c "
-      pip install --no-cache-dir fastapi uvicorn sqlalchemy psycopg2-binary python-multipart google-generativeai pillow boto3 &&
+      pip install --no-cache-dir fastapi uvicorn sqlalchemy psycopg2-binary python-multipart google-generativeai pillow boto3 imagehash pydantic-settings &&
       uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
       "
     environment:
       DATABASE_URL: postgresql://${db_username}:${db_password}@postgres:5432/${db_name}
       GEMINI_API_KEY: ${gemini_api_key}
-      GEMINI_FLASH_3: ${gemini_api_key}
       UPLOAD_DIR: /app/uploads
       REPORT_DIR: /app/reports
       AWS_DEFAULT_REGION: ${aws_region}

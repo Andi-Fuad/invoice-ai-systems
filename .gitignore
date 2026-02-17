@@ -1,4 +1,296 @@
-venv/
+# =====================================================
+# Invoice AI System - .gitignore
+# =====================================================
+
+# =====================================================
+# SECRETS & CREDENTIALS - NEVER COMMIT THESE!
+# =====================================================
 .env
-*.db
+.env.*
+!.env.example
+*.pem
+*.key
+*_rsa
+*_rsa.pub
+secrets.toml
+!secrets.toml.example
+
+# Terraform sensitive files
+terraform.tfvars
+*.tfvars
+!terraform.tfvars.example
+*.backup
+.terraform.tfstate.lock.info
+
+# AWS credentials
+.aws/
+credentials
+config
+
+# =====================================================
+# TERRAFORM
+# =====================================================
+# State files
+*.tfstate
+*.tfstate.*
 .terraform/
+.terraform.lock.hcl
+tfplan
+crash.log
+crash.*.log
+
+# Terraform variables (contain secrets)
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Terraform outputs (may contain IPs, endpoints)
+outputs.json
+
+# =====================================================
+# PYTHON
+# =====================================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# =====================================================
+# APPLICATION DATA - USER UPLOADS
+# =====================================================
+# Invoice uploads (contains user data)
+uploads/
+!uploads/.gitkeep
+
+# Generated reports (contains user data)
+reports/
+!reports/.gitkeep
+
+# Database files (local development)
+*.db
+*.sqlite
+*.sqlite3
+
+# =====================================================
+# DOCKER
+# =====================================================
+# Docker volumes (local data)
+docker/postgres/data/
+postgres_data/
+minio_data/
+
+# Docker compose override (personal dev settings)
+docker-compose.override.yml
+
+# =====================================================
+# LOGS
+# =====================================================
+*.log
+logs/
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =====================================================
+# OPERATING SYSTEM
+# =====================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# =====================================================
+# IDE / EDITORS
+# =====================================================
+# VSCode
+.vscode/
+!.vscode/settings.json.example
+!.vscode/extensions.json
+*.code-workspace
+
+# PyCharm / IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.vim/
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# =====================================================
+# NODE / NPM (if using any JS tools)
+# =====================================================
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# =====================================================
+# TEMPORARY FILES
+# =====================================================
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*.cache
+
+# =====================================================
+# BACKUP FILES
+# =====================================================
+*.backup
+*.old
+*.orig
+*-backup
+*-old
+
+# =====================================================
+# CI/CD
+# =====================================================
+# GitHub Actions artifacts
+.github/workflows/*.log
+
+# =====================================================
+# MONITORING & METRICS
+# =====================================================
+# Prometheus data
+prometheus_data/
+
+# Grafana data
+grafana_data/
+
+# =====================================================
+# DOCUMENTATION BUILDS
+# =====================================================
+docs/_build/
+site/
+.sphinx/
+
+# =====================================================
+# MISC
+# =====================================================
+# Archives
+*.zip
+*.tar.gz
+*.tar
+*.rar
+*.7z
+
+# Large files that shouldn't be in git
+*.pdf
+*.pptx
+*.xlsx
+!docs/*.pdf
+!docs/*.pptx
+
+# SSL certificates
+*.crt
+*.cert
+*.cer
+*.p12
+*.pfx
+
+# =====================================================
+# PROJECT SPECIFIC
+# =====================================================
+# EC2 setup status files
+setup-status.txt
+user-data.log
+
+# Downloaded models or large files
+models/
+*.h5
+*.pkl
+*.joblib
+
+# Test data (if large)
+test_data/large/

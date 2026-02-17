@@ -106,7 +106,7 @@ def get_stats(db: Session = Depends(get_db)):
     
     total_invoices = db.query(Invoice).count()
     total_amount = db.query(func.sum(Invoice.total)).scalar() or 0
-    vendors_count = db.query(Invoice.store_name).distinct().count()
+    stores_count = db.query(Invoice.store_name).distinct().count()
     
     # Get this month's count
     from datetime import datetime

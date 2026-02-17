@@ -149,7 +149,7 @@ wait_for_services() {
     print_info "Waiting for PostgreSQL..."
     sleep 5
     for i in {1..30}; do
-        if docker-compose exec -T postgres pg_isready -U invoice_user -d invoice_db &> /dev/null; then
+        if docker-compose exec -T postgres pg_isready -U invoice_admin -d invoice_admin &> /dev/null; then
             print_success "PostgreSQL is ready"
             break
         fi

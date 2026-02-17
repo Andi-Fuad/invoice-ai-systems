@@ -89,7 +89,7 @@ variable "key_name" {
 variable "db_name" {
   description = "Database name"
   type        = string
-  default     = "invoice_db"
+  default     = "invoice_admin"
 }
 
 variable "db_username" {

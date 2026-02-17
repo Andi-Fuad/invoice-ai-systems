@@ -25,7 +25,7 @@ instance_type = "t3.micro"
 key_name      = "invoice-ai-key" 
 
 # Database Configuration
-db_name     = "invoice_db"
+db_name     = "invoice_admin"
 db_username = "invoice_admin"
 db_password = "invoice_password_admin"  # CHANGE THIS! Minimum 8 characters
 
