@@ -1,215 +1,313 @@
-# Invoice Processing API
+# Invoice AI System
 
-An intelligent invoice processing system powered by **Gemini Flash 3.0 API** that automatically extracts structured data from invoice images and generates comprehensive reports.
+AI-powered invoice processing system with automated data extraction and cloud deployment on AWS.
+
+## Overview
+
+The Invoice AI System is a full-stack application that automates invoice processing using Google's Gemini Vision API. It features a FastAPI backend, Streamlit frontend, and complete AWS infrastructure managed through Terraform.
 
 ## Features
 
-- **AI-Powered OCR**: Uses Google's Gemini Flash multimodal LLM for accurate data extraction
-- **Smart Caching**: Hash-based duplicate detection to save API costs and improve performance
-- **Report Generation**: Automated monthly/yearly PDF reports with statistics
-- **Database Storage**: PostgreSQL/SQLite for persistent data storage
-- **RESTful API**: FastAPI with automatic interactive documentation
-- **Multi-Format Support**: Handles PNG, JPEG, WEBP, and PDF files
+- **AI-Powered Extraction**: Automatic extraction of vendor names, amounts, dates, and line items from invoice images
+- **Multiple File Formats**: Support for PNG, JPEG, and WEBP invoices
+- **Intelligent Caching**: File hash-based duplicate detection to reduce API costs
+- **Report Generation**: Automated PDF report creation with customizable filters (Under Development)
+- **Cloud Storage**: S3 integration for invoice storage with lifecycle policies
+- **RESTful API**: Complete FastAPI backend with interactive documentation
+- **Modern UI**: Streamlit-based interface with real-time processing status
+- **Infrastructure as Code**: Terraform modules for reproducible AWS deployments
 
-## 🏗️ Architecture
+## Technology Stack
+
+### Application
+- **Backend**: FastAPI, SQLAlchemy, PostgreSQL
+- **Frontend**: Streamlit
+- **AI/ML**: Google Gemini Vision API
+- **File Processing**: Pillow, python-multipart
+
+### Infrastructure
+- **Cloud Provider**: AWS
+- **Compute**: EC2 t3.micro
+- **Database**: RDS PostgreSQL t3.micro
+- **Storage**: S3
+- **IaC**: Terraform 1.0+
+- **Containers**: Docker, Docker Compose
+
+### DevOps
+- **CI/CD**: GitHub Actions (Under Development)
+- **Monitoring**: AWS CloudWatch (Under Development)
+- **Version Control**: Git
+
+## Architecture
 
 ```
-Upload Invoice → Calculate Hash → Check Cache
-                                      ↓
-                         ┌────────────┴────────────┐
-                         ↓                         ↓
-                    Found in Cache?           New Invoice?
-                         ↓                         ↓
-                  Return Cached Data       Gemini Vision API
-                  (Instant, Free)          (Extract Data)
-                         ↓                         ↓
-                    Response  ←──────────────  Save to DB
+┌─────────────────┐
+│   Streamlit UI  │
+└────────┬────────┘
+         │
+    ┌────▼─────┐
+    │  FastAPI │
+    └────┬─────┘
+         │
+    ┌────┴────┬──────────┐
+    │         │          │
+┌───▼───┐ ┌──▼───┐  ┌───▼────┐
+│  RDS  │ │  S3  │  │ Gemini │
+└───────┘ └──────┘  └────────┘
 ```
 
 ## Prerequisites
 
-- Python 3.10+
-- SQLite for development
-- Google Gemini API Key ([Get one here](https://makersuite.google.com/app/apikey))
+### Local Development
+- Docker and Docker Compose
+- Python 3.11+
+- PostgreSQL 15 (via Docker)
 
-## 🚀 Quick Start
+### AWS Deployment
+- AWS Account with Free Tier
+- Terraform 1.0+
+- AWS CLI configured
+- SSH key pair in AWS
+- Gemini API key
 
-### 1. Clone the Repository
+## Quick Start
 
+### Project's Public IP: http://18.138.190.182:8501/ (Check it out)
+
+### Local Development
+
+1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/invoice-processor.git
-cd invoice-processor
+git clone https://github.com/andifuad104/invoice-ai-system.git
+cd invoice-ai-system
 ```
 
-### 2. Install Dependencies
-
+2. Create environment file:
 ```bash
-pip install -r requirements.txt
+cp .env
 ```
 
-### 3. Setup Environment Variables
-
-Create a `.env` file in the project root:
-
-```env
-DATABASE_URL=sqlite:///./invoice.db
-GEMINI_API_KEY=your_gemini_api_key_here
-UPLOAD_DIR=./uploads
-REPORT_DIR=./reports
-```
-
-### 4. Run the Application
-
+3. Start services:
 ```bash
-python -m app.main
+docker-compose up -d
 ```
 
-The API will be available at: `http://localhost:8000`
+4. Access the application:
+- Streamlit UI: http://localhost:8501
+- FastAPI Docs: http://localhost:8000/docs
+- FastAPI Health: http://localhost:8000/health
 
-### 5. Access Interactive Documentation
+### AWS Deployment
 
-Open your browser and go to:
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-
-## 📖 API Endpoints
-
-### Upload Invoice
-```http
-POST /invoices/upload
-Content-Type: multipart/form-data
-
-Parameters:
-  - file: Invoice image/PDF file
-  - force_reprocess: (optional) Boolean to bypass cache
-
-Response:
-{
-  "id": 1,
-  "store_name": "ABC Corporation",
-  "invoice_date": "2024-01-15",
-  "total": 15254327.00,
-  "details": [
-    {
-      "product_name": "Laptop",
-      "quantity": 2,
-      "unit": "pcs",
-      "amount": 2,
-      "discount": 0
-    }
-  ],
-  "file_path": "./uploads/...",
-  "file_hash": "abc123...",
-  "is_cached": false
-}
+1. Navigate to Terraform directory:
+```bash
+cd terraform
 ```
 
-### Get All Invoices
-```http
-GET /invoices/?skip=0&limit=100
+2. Configure variables:
+```bash
+cp terraform.tfvars.example terraform.tfvars
 ```
 
-### Get Single Invoice
-```http
-GET /invoices/{invoice_id}
+3. Initialize and deploy:
+```bash
+terraform init
+terraform plan
+terraform apply
 ```
 
-### Get Invoice by Hash
-```http
-GET /invoices/hash/{file_hash}
-```
-
-### Delete Invoice
-```http
-DELETE /invoices/{invoice_id}
-```
-
-### Generate Report
-```http
-POST /reports/generate
-Content-Type: application/json
-
-{
-  "start_date": "2024-01-01",
-  "end_date": "2024-12-31",
-  "report_type": "monthly"
-}
-
-Response: PDF file download
+4. Access outputs:
+```bash
+terraform output
 ```
 
 ## Project Structure
 
 ```
-invoice-processor/
-├── app/
-│   ├── __init__.py
-│   ├── main.py                    # FastAPI application entry point
-│   ├── config.py                  # Configuration and environment variables
-│   ├── database.py                # Database connection and session
-│   ├── models/
-│   │   ├── __init__.py
-│   │   └── invoice.py            # SQLAlchemy models
-│   ├── schemas/
-│   │   ├── __init__.py
-│   │   └── invoice.py            # Pydantic schemas for validation
-│   ├── services/
-│   │   ├── __init__.py
-│   │   ├── gemini_service.py     # Gemini Vision API integration
-│   │   └── report_service.py     # PDF report generation
-│   ├── routers/
-│   │   ├── __init__.py
-│   │   ├── invoice.py            # Invoice endpoints
-│   │   └── report.py             # Report endpoints
-│   └── utils/
-│       ├── __init__.py
-│       └── file_handler.py       # File processing and hashing
-├── uploads/                       # Uploaded invoice files
-├── reports/                       # Generated PDF reports
-├── requirements.txt
-├── .env
-├── Dockerfile
-├── docker-compose.yml
-└── README.md
+invoice-ai-system/
+├── app/                      # FastAPI backend
+│   ├── main.py              # Application entry point
+│   ├── config.py            # Configuration management
+│   ├── database.py          # Database connection
+│   ├── models/              # SQLAlchemy models
+│   ├── routers/             # API endpoints
+│   ├── schemas/             # Pydantic schemas
+│   ├── services/            # Business logic
+│   └── utils/               # Helper functions
+├── streamlit_app/           # Streamlit frontend
+│   ├── Home.py              # Main dashboard
+│   └── pages/               # Additional pages
+├── terraform/               # Infrastructure as Code
+│   ├── main.tf              # Root module
+│   ├── variables.tf         # Variable definitions
+│   ├── outputs.tf           # Output values
+│   └── modules/             # Reusable modules
+│       ├── vpc/             # Network infrastructure
+│       ├── ec2/             # Application server
+│       ├── rds/             # Database
+│       ├── s3/              # Storage
+│       ├── iam/             # Roles and policies
+│       └── security/        # Security groups
+├── docker-compose.yml       # Local development
+├── Dockerfile.api           # FastAPI container
+├── Dockerfile.streamlit     # Streamlit container
+└── requirements.txt         # Python dependencies
 ```
 
-## Usage Examples
+## API Endpoints
 
-### Extracting Invoice Data
+### Invoices
+- `POST /invoices/upload` - Upload and process invoice
+- `GET /invoices/` - List all invoices
+- `GET /invoices/{id}` - Get invoice details
+- `DELETE /invoices/{id}` - Delete invoice
+- `GET /invoices/stats/cache` - Get cache statistics
 
-The system automatically extracts:
-- **Vendor Name**: Company or supplier name
-- **Invoice Date**: Date of the invoice
-- **Line Items**: Products/services with:
-  - Product name
-  - Quantity
-  - Unit of measurement
-  - Amount
-  - Discount (if applicable)
-- **Total Amount**: Final invoice total
+### Reports
+- `POST /reports/generate` - Generate PDF report
+- `GET /reports/download/{filename}` - Download report
 
-### Caching Mechanism
+### Health
+- `GET /health` - Service health check
 
-When you upload an invoice:
-1. System calculates SHA-256 hash of the file
-2. Checks database for existing hash
-3. If found: Returns cached data (instant, no API cost)
-4. If new: Processes with Gemini API and saves
+## Configuration
 
-### Report Generation
+### Environment Variables
 
-Generate professional PDF reports containing:
-- Summary statistics (total invoices, amount, vendors)
-- Detailed transaction table
-- Date range filtering
-- Monthly or yearly aggregation
+Required variables in `.env`:
 
-## Author
+```bash
+# Database
+DATABASE_URL=postgresql://user:password@host:5432/dbname
 
-**Your Name**
-- LinkedIn: [Your Name](https://linkedin.com/in/afuadahsan/)
-- Portfolio: [yourwebsite.com](https://fuad.framer.website/)
+# Gemini API
+GEMINI_API_KEY=your_api_key_here
+GEMINI_FLASH_3=your_api_key_here
 
-For questions or support, please open an issue or contact [your.email@example.com](mailto:afuadahsan@gmail.com)
+# Application
+DEBUG=True
+ENVIRONMENT=development
+UPLOAD_DIR=./uploads
+REPORTS_DIR=./reports
 
----
+# AWS (for deployment)
+AWS_REGION=ap-southeast-1
+S3_BUCKET_NAME=invoice-ai-invoices-dev
+```
+
+### Terraform Variables
+
+Required variables in `terraform.tfvars`:
+
+```hcl
+aws_region       = "ap-southeast-1"
+environment      = "dev"
+allowed_ssh_cidr = "YOUR_IP/32"
+key_name         = "your-key-pair-name"
+db_password      = "secure_password"
+gemini_api_key   = "your_api_key"
+```
+
+## Deployment
+
+### Infrastructure Updates
+
+```bash
+cd terraform
+terraform plan
+terraform apply
+```
+
+### Application Updates
+
+After deploying your code to EC2:
+
+```bash
+ssh -i ~/.ssh/your-key.pem ec2-user@YOUR_EC2_IP
+cd /home/ec2-user/invoice-ai-system
+sudo docker-compose restart
+```
+
+### Monitoring
+
+View CloudWatch logs and metrics in AWS Console:
+- EC2 instance metrics
+- RDS database performance
+- Application logs
+
+## Cost Estimation
+
+### Free Tier (First 6 months)
+- EC2 t3.micro: $0 (750 hours/month)
+- RDS t3.micro: $0 (750 hours/month)
+- S3 storage: $0 (5GB)
+- Data transfer: $0 (100GB/month)
+
+**Total: $0/month**
+
+### After Free Tier
+- EC2 t3.micro: ~$8/month
+- RDS t3.micro: ~$15/month
+- S3 + transfer: ~$2/month
+- EBS storage: ~$2/month
+
+**Total: ~$27/month**
+
+## Security Considerations
+
+- Database credentials stored in environment variables
+- SSH access restricted to specific IP addresses
+- S3 buckets configured with private access only
+- API endpoints protected with CORS policies
+- Terraform state contains sensitive data (keep secure)
+
+## Troubleshooting
+
+### Local Development
+
+**Database connection error:**
+```bash
+# Restart PostgreSQL container
+docker-compose restart postgres
+```
+
+**Port already in use:**
+```bash
+# Check what's using the port
+lsof -i :8000
+# Kill the process or change port in docker-compose.yml
+```
+
+### AWS Deployment
+
+**SSH connection timeout:**
+- Verify security group allows SSH from your IP
+- Check your current IP: `curl ifconfig.me`
+- Update security group or terraform.tfvars
+
+**Database connection error:**
+- Verify RDS is in "available" state
+- Check security group allows PostgreSQL from EC2
+- Verify credentials in docker-compose.yml
+
+**Application not starting:**
+```bash
+# SSH into EC2
+ssh -i ~/.ssh/your-key.pem ec2-user@YOUR_IP
+
+# Check logs
+sudo docker-compose logs -f
+
+# Restart services
+sudo docker-compose restart
+```
+
+## Next Update
+
+- Fix the Generate Report issue
+- Create a CI/CD using GitHub Actions
+- Create a monitoring using AWS CloudWatch
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
